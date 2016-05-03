@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+		<div class="container-fluid">
+			<div id="top-margin" class="row container">
+			<div class="col-sm-6">
+				{% for post in display_post_list %}
+					<div id="post-container" class="container">
+						<div class="row">
+							<div class="col-xs-12">
+								<a href="{{ url_for('show_post', postkey=post.id) }}"><h4>{{ post.title }}</h4></a>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-xs-12">
+								<p>Author: {{ post.user.username }}</p>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-xs-12">
+								<p>{{ post.content }}</p>
+							</div>
+						</div>
+					</div>
+					<div class="row container bottom-margin">
+					</div>
+				{% endfor %}
+			</div>
+			<div class="row container-fluid">
+				<div class="col-xs-12">
+					<nav>
+						<ul class="pagination">
+							<li {% if current_page == 1 %}class='disabled'{% endif %}>
+								<a href="{{ url_for('index', current_page=(current_page - 1)) }}">
+									<span>&laquo;</span>
+								</a>
+							</li>
+							{% for pagenumber in pages %}
+							<li {% if pagenumber == current_page %}class='active'{% endif %}>
+								<a href="{{ url_for('index', current_page=pagenumber) }}">{{ pagenumber }}</a>
+							</li>
+							{% endfor %}
+							<li {% if current_page == max_pages %}class='disabled'{% endif %}>
+								<a href="{{ url_for('index', current_page=(current_page + 1)) }}">
+									<span>&raquo;</span>
+								</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
