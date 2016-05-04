@@ -1,16 +1,14 @@
 # __init__.py section
 from flask import Flask, request, render_template, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
-import json
 import math
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 db = SQLAlchemy(app)
 
-
 class User(db.Model): #user model, derived from db.model
-    id = db.Column(db.Integer, primary_key=True) #makes a column class for id, primary key means unique identifier
+    id = db.Column(db.Integer, primary_key=True) #makes a column class for id
     username = db.Column(db.String(80), unique=True)
 
 
@@ -70,7 +68,8 @@ def show_user(userkey):
     '''Displays user page, including post history,
     option to edit profile info'''
 
-    return render_template('user.html', user=users[userkey])
+    user_object = db.session.query(User).filter(User.id == userkey).one()
+    return render_template('user.html', user=user_object)
 
 
 @app.route('/users/')
@@ -80,10 +79,9 @@ def users_redirect():
 
 @app.route('/<postkey>')
 def show_post(postkey):
-    if postkey in posts:
-        return render_template('post.html', post=posts[postkey])
-    elif postkey in users:
-        return redirect(url_for('show_user', userkey=postkey))
+    if db.session.query(Post).get(postkey):
+        post_object = db.session.query(Post).filter_by(id=postkey).one()
+        return render_template('post.html', post=post_object)
     else:
         return redirect(url_for('index'))
 
@@ -108,10 +106,3 @@ def page_not_found(error):
 if __name__ == '__main__':
     app.run(debug=True)
 
-
-
-
-    # with open('db.json', 'r') as f:
-#     posts = json.load(f)
-# with open('users.json', 'r') as f:
-#     users = json.load(f)
