@@ -19,6 +19,13 @@ class Post(db.Model):
     title = db.Column(db.String)
 
 
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    poster_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    parent_post = db.Column(db.Integer, db.ForeignKey('post.id'))
+    content = db.Column(db.String)
+
+
 
 # views.py section
 @app.route('/')
@@ -43,7 +50,8 @@ def index(current_page=1):
                                               .offset((current_page - 1) * 5)\
                                               .all()
     for post in display_post_list:
-        post.user = db.session.query(User).filter(User.id == post.poster_id).one()
+        post.user = db.session.query(User).filter(User.id == post.poster_id)\
+                                          .one()
     return render_template('index.html',
                             title = 'Index',
                             display_post_list = display_post_list,
